@@ -1,6 +1,6 @@
 {
   "name": "distance-correlation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A typescript package providing a function computing the distance correlation between two scalar random variables.",
   "main": "index.js",
   "scripts": {
