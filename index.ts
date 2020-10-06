@@ -109,8 +109,3 @@ class SymmetricMap {
         }
     }
 }
-
-let testX = [1, 2, 3, 4, 4.1];
-let testY = [1, 2, 3.1, 4.7, 4.2];
-
-console.log(distanceCorrelation(testX, testY));
