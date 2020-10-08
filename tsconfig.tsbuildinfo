@@ -82,12 +82,12 @@
         "affectsGlobalScope": true
       },
       "./index.ts": {
-        "version": "ae3457b4907a9327e25667546f9a9c10545b4f51f2d49341332cb9f3f34e2d4a",
-        "signature": "5a037d80484f8c5eaa0aea104d2d3c4244d922c4deb807507524e035fd5751d2",
+        "version": "63286d78f0e1de6724cd93d7c7f7dd8ebeebed9333c0affc462996ae3735916d",
+        "signature": "1988e74504238034042772093240aff773ee2802117bf96463ee2a261a8a858a",
         "affectsGlobalScope": false
       },
       "./test.ts": {
-        "version": "309a4b7ef3f3df641221f538eff0f8db0431c35c1e38848662431cf13a857dae",
+        "version": "0ad334b78c8621be6fb3e9f024c3f8d0136de0409e3996fe8870fb021a6dbfdc",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
         "affectsGlobalScope": false
       }

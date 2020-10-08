@@ -31,3 +31,6 @@ That means that the function accepts two arrays of numbers and returns a number.
 `console.log(distanceCorrelation(x,y));`
 
 `1`
+
+## Efficiency
+The computational complexity is O(n^2), but my tests show that about 10,000 points can be computed in one second.

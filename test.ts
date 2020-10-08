@@ -9,7 +9,7 @@ for (let i = 0; i < length; i++) {
 }
 
 let startTime = Date.now();
-console.log(distanceCorrelation(x, y, false));
+console.log(distanceCorrelation(x, y));
 console.log(`Computing the distance correlation for ${length} points took ${Date.now() - startTime} ms.`);
 
 // Results: 10 seconds for 100 points, 100 seconds for 200 points.
