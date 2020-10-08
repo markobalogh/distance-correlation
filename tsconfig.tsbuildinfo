@@ -82,8 +82,13 @@
         "affectsGlobalScope": true
       },
       "./index.ts": {
-        "version": "284d19cc2fb10f4dc5a9eedaab576255cf9bcaef60e45b84cd2c6c891fdab8fc",
-        "signature": "1988e74504238034042772093240aff773ee2802117bf96463ee2a261a8a858a",
+        "version": "ae3457b4907a9327e25667546f9a9c10545b4f51f2d49341332cb9f3f34e2d4a",
+        "signature": "5a037d80484f8c5eaa0aea104d2d3c4244d922c4deb807507524e035fd5751d2",
+        "affectsGlobalScope": false
+      },
+      "./test.ts": {
+        "version": "309a4b7ef3f3df641221f538eff0f8db0431c35c1e38848662431cf13a857dae",
+        "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
         "affectsGlobalScope": false
       }
     },
@@ -108,10 +113,15 @@
       "project": "./tsconfig.json",
       "configFilePath": "./tsconfig.json"
     },
-    "referencedMap": {},
+    "referencedMap": {
+      "./test.ts": [
+        "./index.ts"
+      ]
+    },
     "exportedModulesMap": {},
     "semanticDiagnosticsPerFile": [
       "./index.ts",
+      "./test.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.dom.d.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.dom.iterable.d.ts",
       "../../../../usr/local/lib/node_modules/typescript/lib/lib.es2015.collection.d.ts",

@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.distanceCorrelation = void 0;
-function distanceCorrelation(x, y) {
+/**
+ * Set precomputeDistanceMatrix to false to reduce memory requirements, which otherwise are O(n^2) where n is the length of x and y.
+ */
+function distanceCorrelation(x, y, precomputeDistanceMatrix = true) {
     if (x.length !== y.length) {
         throw new Error('X and Y must have the same length.');
     }
@@ -11,45 +14,116 @@ function distanceCorrelation(x, y) {
     let yDistance = function (j, k) {
         return Math.abs(y[j] - y[k]);
     };
-    let xDistanceMatrix = new SymmetricMap(x.length);
-    let yDistanceMatrix = new SymmetricMap(y.length);
-    for (let j = 0; j < x.length; j++) {
-        for (let k = j; k < x.length; k++) {
-            xDistanceMatrix.set([j, k], xDistance(j, k));
-            yDistanceMatrix.set([j, k], yDistance(j, k));
-        }
-    }
-    let rowMean = function (matrix, rowIndex) {
-        let count = 0;
-        for (let i = 0; i < matrix.dimension; i++) {
-            count += matrix.get([rowIndex, i]);
-        }
-        return count / matrix.dimension;
-    };
-    let columnMean = function (matrix, columnIndex) {
-        let count = 0;
-        for (let i = 0; i < matrix.dimension; i++) {
-            count += matrix.get([i, columnIndex]);
-        }
-        return count / matrix.dimension;
-    };
-    let grandMean = function (matrix) {
-        //mean of all elements in the distance matrix
-        //can calculate mean of upper left half of matrix due to symmetry; diagonals must be zero.
-        let count = 0;
-        for (let i = 0; i < matrix.dimension; i++) {
-            for (let j = i + 1; j < matrix.dimension; j++) {
-                count += matrix.get([i, j]);
+    let A_jk;
+    let B_jk;
+    if (precomputeDistanceMatrix) {
+        let xDistanceMatrix = new SymmetricMap(x.length);
+        let yDistanceMatrix = new SymmetricMap(y.length);
+        for (let j = 0; j < x.length; j++) {
+            for (let k = j; k < x.length; k++) {
+                xDistanceMatrix.set([j, k], xDistance(j, k));
+                yDistanceMatrix.set([j, k], yDistance(j, k));
             }
         }
-        return (count * 2) / (matrix.dimension * matrix.dimension);
-    };
-    let A_jk = function (j, k) {
-        return xDistanceMatrix.get([j, k]) - rowMean(xDistanceMatrix, j) - columnMean(xDistanceMatrix, k) + grandMean(xDistanceMatrix);
-    };
-    let B_jk = function (j, k) {
-        return yDistanceMatrix.get([j, k]) - rowMean(yDistanceMatrix, j) - columnMean(yDistanceMatrix, k) + grandMean(yDistanceMatrix);
-    };
+        let rowMean = function (matrix, rowIndex) {
+            let count = 0;
+            for (let i = 0; i < matrix.dimension; i++) {
+                count += matrix.get([rowIndex, i]);
+            }
+            return count / matrix.dimension;
+        };
+        let columnMean = function (matrix, columnIndex) {
+            let count = 0;
+            for (let i = 0; i < matrix.dimension; i++) {
+                count += matrix.get([i, columnIndex]);
+            }
+            return count / matrix.dimension;
+        };
+        let grandMean = function (matrix) {
+            //mean of all elements in the distance matrix
+            //can calculate mean of upper left half of matrix due to symmetry; diagonals must be zero.
+            let count = 0;
+            for (let i = 0; i < matrix.dimension; i++) {
+                for (let j = i + 1; j < matrix.dimension; j++) {
+                    count += matrix.get([i, j]);
+                }
+            }
+            return (count * 2) / (matrix.dimension * matrix.dimension);
+        };
+        let xGrandMean = grandMean(xDistanceMatrix);
+        let yGrandMean = grandMean(yDistanceMatrix);
+        let xRowMeans = new Array(x.length);
+        let yRowMeans = new Array(y.length);
+        let xColumnMeans = new Array(x.length);
+        let yColumnsMeans = new Array(y.length);
+        for (let i = 0; i < x.length; i++) {
+            xRowMeans[i] = rowMean(xDistanceMatrix, i);
+            xColumnMeans[i] = columnMean(xDistanceMatrix, i);
+        }
+        for (let i = 0; i < y.length; i++) {
+            yRowMeans[i] = rowMean(yDistanceMatrix, i);
+            yColumnsMeans[i] = columnMean(yDistanceMatrix, i);
+        }
+        A_jk = function (j, k) {
+            return xDistanceMatrix.get([j, k]) - xRowMeans[j] - xColumnMeans[k] + xGrandMean;
+        };
+        B_jk = function (j, k) {
+            return yDistanceMatrix.get([j, k]) - yRowMeans[j] - yColumnsMeans[k] + yGrandMean;
+        };
+    }
+    else {
+        let rowMean = function (xOrY, rowIndex) {
+            let count = 0;
+            for (let i = 0; i < xOrY.length; i++) {
+                count += Math.abs(xOrY[rowIndex] - xOrY[i]);
+            }
+            return count / xOrY.length;
+        };
+        let columnMean = function (xOrY, columnIndex) {
+            let count = 0;
+            for (let i = 0; i < xOrY.length; i++) {
+                count += Math.abs(xOrY[i] - xOrY[columnIndex]);
+            }
+            return count / xOrY.length;
+        };
+        let xRowMeans = new Array(x.length);
+        let yRowMeans = new Array(y.length);
+        let xColumnMeans = new Array(x.length);
+        let yColumnsMeans = new Array(y.length);
+        for (let i = 0; i < x.length; i++) {
+            xRowMeans[i] = rowMean(x, i);
+            xColumnMeans[i] = columnMean(x, i);
+        }
+        for (let i = 0; i < y.length; i++) {
+            yRowMeans[i] = rowMean(y, i);
+            yColumnsMeans[i] = columnMean(y, i);
+        }
+        let grandMean = function (xOrY) {
+            //mean of all elements in the distance matrix
+            //can calculate as mean of rowMeans.
+            let count = 0;
+            if (xOrY === 'x') {
+                for (let i = 0; i < x.length; i++) {
+                    count += xRowMeans[i];
+                }
+                return count / x.length;
+            }
+            else {
+                for (let i = 0; i < x.length; i++) {
+                    count += yRowMeans[i];
+                }
+                return count / y.length;
+            }
+        };
+        let xGrandMean = grandMean('x');
+        let yGrandMean = grandMean('y');
+        A_jk = function (j, k) {
+            return Math.abs(x[j] - x[k]) - xRowMeans[j] - xColumnMeans[k] + xGrandMean;
+        };
+        B_jk = function (j, k) {
+            return Math.abs(y[j] - y[k]) - yRowMeans[j] - yColumnsMeans[k] + yGrandMean;
+        };
+    }
     let distanceCovariance = 0;
     for (let j = 0; j < x.length; j++) {
         for (let k = 0; k < y.length; k++) {
